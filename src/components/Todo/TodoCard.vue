@@ -20,7 +20,7 @@
     <form v-if="newTodo !== null" class="addTodo" @submit.prevent="addTodo">
       <input v-model="newTodo" placeholder="New Todo" :class="{ inputFocus: newTodo.length > 0 }" />
       <button type="submit"><PlusIcon width="24" height="24" /></button>
-      <button @click.prevent="newTodo = null">X</button>
+      <button @click.prevent="newTodo = null"><CloseIcon width="24" height="24" /></button>
     </form>
   </div>
 </template>

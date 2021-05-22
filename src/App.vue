@@ -39,6 +39,7 @@ export default {
             { todo: "Feed her", completed: false },
             { todo: "Play with her", completed: false },
             { todo: "take videos", completed: false },
+            { todo: "take videos and send them to The Scared Cat", completed: false },
           ],
         },
       ],
