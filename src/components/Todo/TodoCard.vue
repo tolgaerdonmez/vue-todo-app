@@ -3,53 +3,61 @@
     <div class="title addTodo">
       <h2>{{ title }}</h2>
       <button @click="newTodo = ''"><PlusIcon width="24" height="24" /></button>
-      <button @click="remove"><TrashIcon width="24" height="24" /></button>
+      <button @click="deleteCollection"><TrashIcon width="24" height="24" /></button>
     </div>
     <div class="todos">
       <transition-group name="todoList">
         <Todo
-          v-for="(todo, i) in _todos"
+          v-for="(todo, id) in todos"
           :todo="todo.todo"
           :completed="todo.completed"
-          :toggle="() => toggleTodo(i)"
-          :remove="() => removeTodo(i)"
-          :key="todo.todo"
+          :key="id"
+          @toggle="toggleTodo(id, todo)"
+          @remove="deleteTodo(id)"
         />
       </transition-group>
     </div>
-    <form v-if="newTodo !== null" class="addTodo" @submit.prevent="addTodo">
+    <form
+      v-if="newTodo !== 0"
+      class="addTodo"
+      @submit.prevent="
+        () => {
+          createTodo(newTodo);
+          newTodo = 0;
+        }
+      "
+    >
       <input v-model="newTodo" placeholder="New Todo" :class="{ inputFocus: newTodo.length > 0 }" />
       <button type="submit"><PlusIcon width="24" height="24" /></button>
-      <button @click.prevent="newTodo = null"><CloseIcon width="24" height="24" /></button>
+      <button @click.prevent="newTodo = 0"><CloseIcon width="24" height="24" /></button>
     </form>
   </div>
 </template>
 
-<script>
+<script setup>
+import { defineProps, defineComponent, ref } from "vue";
+import { useCollection } from "../../store";
+
 import Todo from "./TodoItem.vue";
 
+defineComponent(Todo);
+
+const props = defineProps({
+  collectionID: String,
+});
+
+const newTodo = ref(0);
+
+const { title, todos, createTodo, updateTodo, deleteTodo, deleteCollection } = useCollection(props.collectionID);
+
+const toggleTodo = (id, todo) => {
+  updateTodo(id, { ...todo, completed: !todo.completed });
+};
+</script>
+
+<script>
 export default {
   components: { Todo },
-  props: {
-    title: String,
-    todos: Array,
-    remove: Function,
-  },
-  data() {
-    return { _todos: this.todos, newTodo: null };
-  },
-  methods: {
-    addTodo() {
-      this._todos.push({ todo: this.newTodo });
-      this.newTodo = null;
-    },
-    removeTodo(index) {
-      this._todos = this._todos.filter((_, i) => i !== index);
-    },
-    toggleTodo(index) {
-      this._todos[index].completed = !this._todos[index].completed;
-    },
-  },
 };
 </script>
 

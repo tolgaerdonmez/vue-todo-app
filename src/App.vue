@@ -1,61 +1,38 @@
 <template>
   <div class="container">
     <h1>Vue Todo</h1>
-    <form class="todoInputContainer" @submit.prevent="createTodoList">
+    <form class="todoInputContainer" @submit.prevent="createCol">
       <input
-        :class="{ inputFocus: newTodoList.length > 0 }"
+        :class="{ inputFocus: collectionTitle.length > 0 }"
         class="inputFocusOutline"
-        v-model="newTodoList"
+        v-model="collectionTitle"
         placeholder="Add new todo list"
       />
       <button type="submit"><PlusIcon width="24" height="24" /></button>
     </form>
     <ul class="todos">
       <transition-group name="todosList">
-        <TodoCard
-          v-for="(list, i) in todoLists"
-          :key="list.title"
-          :title="list.title"
-          :todos="list.todos"
-          :remove="() => removeTodoList(i)"
-        />
+        <TodoCard v-for="key in Object.keys(cols)" :key="key" :collectionID="key" />
       </transition-group>
     </ul>
   </div>
 </template>
 
-<script>
+<script setup>
+import { ref, defineComponent } from "vue";
+import { useCollections, createCollection } from "./store";
+
 import TodoCard from "./components/Todo/TodoCard.vue";
 
-export default {
-  components: { TodoCard },
-  data() {
-    return {
-      newTodoList: "",
-      todoLists: [
-        {
-          title: "For Latte",
-          todos: [
-            { todo: "Feed her", completed: false },
-            { todo: "Play with her", completed: false },
-            { todo: "take videos", completed: false },
-            { todo: "take videos and send them to The Scared Cat", completed: false },
-          ],
-        },
-      ],
-    };
-  },
-  methods: {
-    createTodoList() {
-      if (!this.newTodoList.length > 0) return;
-      if (this.todoLists.filter(({ title }) => title === this.newTodoList).length > 0) return;
-      this.todoLists.push({ title: this.newTodoList, todos: [] });
-      this.newTodoList = "";
-    },
-    removeTodoList(index) {
-      this.todoLists = this.todoLists.filter((_, i) => i !== index);
-    },
-  },
+defineComponent(TodoCard);
+
+const cols = useCollections();
+
+const collectionTitle = ref("");
+
+const createCol = () => {
+  createCollection(collectionTitle.value);
+  collectionTitle.value = "";
 };
 </script>
 

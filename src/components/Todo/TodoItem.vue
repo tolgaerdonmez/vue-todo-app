@@ -1,22 +1,22 @@
 <template>
   <div class="todoItem">
-    <button id="toggle" @click="toggle">
+    <button id="toggle" @click="emit('toggle')">
       <CheckmarkIcon v-if="completed" width="36" height="36" />
     </button>
     <p :class="{ strikeTrough: completed }">{{ todo }}</p>
-    <button id="remove" @click="remove"><RemoveIcon width="24" height="24" /></button>
+    <button id="remove" @click="emit('remove')"><RemoveIcon width="24" height="24" /></button>
   </div>
 </template>
 
-<script>
-export default {
-  props: {
-    todo: String,
-    completed: Boolean,
-    toggle: Function,
-    remove: Function,
-  },
-};
+<script setup>
+import { defineEmit, defineProps } from "vue";
+
+defineProps({
+  todo: String,
+  completed: Boolean,
+});
+
+const emit = defineEmit(["toggle", "remove"]);
 </script>
 
 <style lang="scss">
